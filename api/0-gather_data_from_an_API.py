@@ -1,35 +1,37 @@
 #!/usr/bin/python3
+
 """
-gathing data from an api
+Module
 """
+
 import requests
 import sys
 
+
 if __name__ == "__main__":
-    user_id = int(sys.argv[1])
+    url = "https://jsonplaceholder.typicode.com/users/{}/todos".format(
+        sys.argv[1])
+    url_2 = "https://jsonplaceholder.typicode.com/users/{}/".format(
+        sys.argv[1])
 
-    r1 = requests.get("https://jsonplaceholder.typicode.com/users")
+    response = requests.get(url)
+    result = response.json()
+    response_2 = requests.get(url_2)
+    result_2 = response_2.json()
 
-    users = r1.json()
+    item_2 = result_2.get('name')
 
-    r2 = requests.get("https://jsonplaceholder.typicode.com/todos")
+    count = 0
+    count_2 = 0
 
-    todos = r2.json()
+    for item in result:
+        if item.get('userId') == int(sys.argv[1]):
+            count_2 += 1
+        if item.get('completed') and item.get('userId') == int(sys.argv[1]):
+            count += 1
+    print('Employee {} is done with tasks({}/{}):'.format(item_2,
+                                                          count, count_2))
 
-    for user in users:
-        if user.get("id") == user_id:
-            name = user.get("name")
-
-    total = 0
-    done = 0
-    task_done = []
-    for todo in todos:
-        if todo.get("userId") == user_id:
-            total += 1
-            if todo.get("completed"):
-                task_done.append(todo.get("title"))
-                done += 1
-
-    print(f"Employee {name} is done with tasks({done}/{total}):")
-    for task in task_done:
-        print(f"\t {task}")
+    for item in result:
+        if item.get('completed') and item.get('userId') == int(sys.argv[1]):
+            print("\t {}".format(item['title']))
