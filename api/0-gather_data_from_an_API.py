@@ -1,37 +1,36 @@
 #!/usr/bin/python3
-
-"""
-Module
-"""
+"""Script to get todos for a user from API"""
 
 import requests
 import sys
 
 
-if __name__ == "__main__":
-    url = "https://jsonplaceholder.typicode.com/users/{}/todos".format(
-        sys.argv[1])
-    url_2 = "https://jsonplaceholder.typicode.com/users/{}/".format(
-        sys.argv[1])
+def main():
+    """main function"""
+    user_id = int(sys.argv[1])
+    todo_url = 'https://jsonplaceholder.typicode.com/todos'
+    user_url = 'https://jsonplaceholder.typicode.com/users/{}'.format(user_id)
 
-    response = requests.get(url)
-    result = response.json()
-    response_2 = requests.get(url_2)
-    result_2 = response_2.json()
+    response = requests.get(todo_url)
 
-    item_2 = result_2.get('name')
+    total_questions = 0
+    completed = []
+    for todo in response.json():
 
-    count = 0
-    count_2 = 0
+        if todo['userId'] == user_id:
+            total_questions += 1
 
-    for item in result:
-        if item.get('userId') == int(sys.argv[1]):
-            count_2 += 1
-        if item.get('completed') and item.get('userId') == int(sys.argv[1]):
-            count += 1
-    print('Employee {} is done with tasks({}/{}):'.format(item_2,
-                                                          count, count_2))
+            if todo['completed']:
+                completed.append(todo['title'])
 
-    for item in result:
-        if item.get('completed') and item.get('userId') == int(sys.argv[1]):
-            print("\t {}".format(item['title']))
+    user_name = requests.get(user_url).json()['name']
+
+    printer = ("Employee {} is done with tasks({}/{}):".format(user_name,
+               len(completed), total_questions))
+    print(printer)
+    for q in completed:
+        print("\t {}".format(q))
+
+
+if __name__ == '__main__':
+    main()
