@@ -1,27 +1,35 @@
 #!/usr/bin/python3
-""" Library to gather data from an API """
-
+"""
+gathing data from an api
+"""
 import requests
 import sys
 
-""" Function to gather data from an API """
-
 if __name__ == "__main__":
-    employee_id = sys.argv[1]
-    url = "https://jsonplaceholder.typicode.com/users/{}".format(employee_id)
+    user_id = int(sys.argv[1])
 
-    todo = "https://jsonplaceholder.typicode.com/todos?userId={}"
-    todo = todo.format(employee_id)
+    r1 = requests.get("https://jsonplaceholder.typicode.com/users")
 
-    user_info = requests.request("GET", url).json()
-    todo_info = requests.request("GET", todo).json()
+    users = r1.json()
 
-    employee_name = user_info.get("name")
-    total_tasks = list(filter(lambda x: (x["completed"] is True), todo_info))
-    task_com = len(total_tasks)
-    total_task_done = len(todo_info)
+    r2 = requests.get("https://jsonplaceholder.typicode.com/todos")
 
-    print("Employee {} is done with tasks({}/{}):".format(employee_name,
-          task_com, total_task_done))
+    todos = r2.json()
 
-    [print("\t {}".format(task.get("title"))) for task in total_tasks]
+    for user in users:
+        if user.get("id") == user_id:
+            name = user.get("name")
+
+    total = 0
+    done = 0
+    task_done = []
+    for todo in todos:
+        if todo.get("userId") == user_id:
+            total += 1
+            if todo.get("completed"):
+                task_done.append(todo.get("title"))
+                done += 1
+
+    print(f"Employee {name} is done with tasks({done}/{total}):")
+    for task in task_done:
+        print(f"\t {task}")
