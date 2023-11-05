@@ -16,6 +16,7 @@ def main():
     total_questions = 0
     completed = []
     for todo in response.json():
+
         if todo['userId'] == user_id:
             total_questions += 1
 
@@ -23,9 +24,6 @@ def main():
                 completed.append(todo['title'])
 
     user_name = requests.get(user_url).json()['name']
-
-    # Ensure the Employee Name is 18 characters long
-    user_name = user_name[:18] + "OK"
 
     printer = ("Employee {} is done with tasks({}/{}):".format(user_name,
                len(completed), total_questions))
